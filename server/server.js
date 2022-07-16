@@ -1,12 +1,3 @@
-/*
- * @Author: duxinyues yongyuan253015@gmail.com
- * @Date: 2022-07-12 23:07:23
- * @LastEditors: duxinyues yongyuan253015@gmail.com
- * @LastEditTime: 2022-07-12 23:22:26
- * @FilePath: \webide\server\server.js
- * @Description: 
- * Copyright (c) 2022 by duxinyues email: yongyuan253015@gmail.com, All Rights Reserved.
- */
 const express = require("express");
 const app = express();
 const fs = require("fs");
@@ -28,11 +19,12 @@ app.use(express.urlencoded({ extended: false }));
 app.get("/file", (request, response) => {
     response.setHeader('Content-Type', 'text/html');
     let basepath = "../"; //解析目录路径
-    let filterFile = ["node_modules", "\\.+.*", "log", "dist", "package.json", "server.js", "yarn.lock"]; //过滤文件名，使用，隔开
+    let filterFile = ["node_modules", "\\.+.*", "yarn.lock"]; //过滤文件名，使用，隔开
     let stopFloor = 10; //遍历层数
     let generatePath = `./log/${new Date().getTime()}.txt`; //生成文件路径
     let isFullPath = true; //是否输出完整路径
 
+    // 输出文件路径
     function getPartPath(dirPath) {
         let base = basepath.split(/\/|\\/g);
         dirPath = dirPath.split(/\/|\\/g);
@@ -61,25 +53,23 @@ app.get("/file", (request, response) => {
         list.forEach((itemPath) => {
             const fullPath = path.join(dirPath, itemPath);
             const fileStat = fs.statSync(fullPath);
-            const isFile = fileStat.isFile();
-            const isDirectory = fileStat.isDirectory()
+            const isFile = fileStat.isFile();//判断是否是文件
+            const isDirectory = fileStat.isDirectory(); // 判断是否是文件夹
             const dir = {
                 label: isFullPath ? getPartPath(fullPath) : itemPath,
                 name: itemPath,
                 isFile: isFile, // 是否是文件
                 isDirectory: isDirectory // 是否是目录
             };
-            if (!isFile) {
+            if (isDirectory) {
                 dir.children = processDir(fullPath, [], floor + 1);
             }
 
             dirTree.push(dir);
         });
-        // console.log("目录", dirTree)
         return dirTree;
     }
 
-    console.log("获取中，请稍后……");
     let dirTree = [];
     dirTree = processDir(basepath, dirTree);
     let fileTree = '';
@@ -108,7 +98,6 @@ app.get("/file", (request, response) => {
                 );
         }
     }
-    console.log("生成中，请稍后……");
     function writeTree(filePath, content) {
         clearTxt(generatePath);
         fs.writeFileSync(filePath, `${content}`);
@@ -117,9 +106,9 @@ app.get("/file", (request, response) => {
         fileTree = "";
         fs.writeFileSync(filePath, "");
     }
+    // 生成tree格式的目录
     consoleTree(dirTree);
     writeTree(generatePath, fileTree);
-    console.log("生成结束", dirTree);
     response.send(dirTree)
 });
 app.get('/edit', (request, response) => {
@@ -127,8 +116,8 @@ app.get('/edit', (request, response) => {
         response.end('文件路径出错了')
         return
     }
-    const basepath = './' + request.query.path; // 完整文件路径
-
+    const basepath = '../' + request.query.path; // 完整文件路径
+    console.log("文件路径", basepath)
     let file = fs.createReadStream(basepath, {
         encoding: "utf-8"
     });
@@ -138,7 +127,6 @@ app.get('/edit', (request, response) => {
     });
 
     file.on("data", function (data) {
-        console.log("内容：", data)
         response.end(data);
     });
 
@@ -165,7 +153,6 @@ app.post('/save', (req, res) => {
         console.log('打开文件，开始保存');
     });
     out.write(req.body.code, function () {
-        console.log("保存完成");
         res.send("保存成功");
     });
 })
