@@ -2,7 +2,7 @@
  * @Author: duxinyues yongyuan253015@gmail.com
  * @Date: 2022-07-12 23:07:23
  * @LastEditors: duxinyues yongyuan253015@gmail.com
- * @LastEditTime: 2022-07-12 23:07:26
+ * @LastEditTime: 2022-07-12 23:22:26
  * @FilePath: \webide\server\server.js
  * @Description: 
  * Copyright (c) 2022 by duxinyues email: yongyuan253015@gmail.com, All Rights Reserved.
@@ -30,7 +30,7 @@ app.get("/file", (request, response) => {
     let basepath = "../"; //解析目录路径
     let filterFile = ["node_modules", "\\.+.*", "log", "dist", "package.json", "server.js", "yarn.lock"]; //过滤文件名，使用，隔开
     let stopFloor = 10; //遍历层数
-    let generatePath = `../log/${new Date().getTime()}.txt`; //生成文件路径
+    let generatePath = `./log/${new Date().getTime()}.txt`; //生成文件路径
     let isFullPath = true; //是否输出完整路径
 
     function getPartPath(dirPath) {
