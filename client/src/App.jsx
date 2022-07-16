@@ -1,12 +1,3 @@
-/*
- * @Author: 韦永愿 1638877065@qq.com
- * @Date: 2022-07-11 15:35:11
- * @LastEditors: 韦永愿 1638877065@qq.com
- * @LastEditTime: 2022-07-12 17:37:12
- * @FilePath: \webide\src\App.jsx
- * @Description: 
- * Copyright (c) 2022 by 韦永愿 email: 1638877065@qq.com, All Rights Reserved.
- */
 import { useEffect, useState } from "react";
 import { Menu, Button } from "antd";
 import {
@@ -30,7 +21,7 @@ function App() {
     getDirectory();
   }, [])
   const getDirectory = () => {
-    fetch("http://10.10.0.145:8000/file")
+    fetch("/file")
       .then(res => res.json())
       .then(data => {
         console.log("目录", data)
@@ -41,7 +32,7 @@ function App() {
     setCode(value);
   }
   const editFile = (path) => {
-    fetch("http://10.10.0.145:8000/edit?path=" + path)
+    fetch("/edit?path=" + path)
       .then(res => res.text())
       .then(data => {
         setCode(data);
@@ -52,7 +43,7 @@ function App() {
       return
     }
     console.log("保存代码", code)
-    fetch("http://10.10.0.145:8000/save", {
+    fetch("/save", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
